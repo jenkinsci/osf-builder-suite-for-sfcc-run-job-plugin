@@ -1,0 +1,53 @@
+<?jelly escape-by-default='true'?>
+<j:jelly
+    xmlns:j="jelly:core"
+    xmlns:st="jelly:stapler"
+    xmlns:d="jelly:define"
+    xmlns:l="/lib/layout"
+    xmlns:t="/lib/hudson"
+    xmlns:f="/lib/form"
+    xmlns:c="/lib/credentials">
+
+    <f:entry
+        title="Instance Hostname"
+        field="hostname"
+        help="/plugin/osf-builder-suite-for-sfcc-run-job/help/projectConfig-hostname.html">
+
+        <f:textbox clazz="required"/>
+    </f:entry>
+
+    <f:entry
+        title="Open Commerce API Credentials"
+        field="ocCredentialsId"
+        help="/plugin/osf-builder-suite-for-sfcc-run-job/help/projectConfig-ocCredentialsId.html">
+
+        <c:select />
+    </f:entry>
+
+    <f:entry
+        title="Open Commerce API Version"
+        field="ocVersion"
+        help="/plugin/osf-builder-suite-for-sfcc-run-job/help/projectConfig-ocVersion.html">
+
+        <f:textbox clazz="required" />
+    </f:entry>
+
+    <f:entry
+        title="Job Name"
+        field="jobName"
+        help="/plugin/osf-builder-suite-for-sfcc-run-job/help/projectConfig-jobName.html">
+
+        <f:textbox clazz="required" />
+    </f:entry>
+
+    <f:entry
+        title="Job Arguments"
+        help="/plugin/osf-builder-suite-for-sfcc-run-job/help/projectConfig-jobArguments.html">
+
+        <f:repeatableProperty field="jobArguments">
+            <div align="right">
+                <f:repeatableDeleteButton />
+            </div>
+        </f:repeatableProperty>
+    </f:entry>
+</j:jelly>

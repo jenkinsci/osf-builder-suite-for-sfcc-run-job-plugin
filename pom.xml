@@ -10,6 +10,7 @@
         <relativePath />
     </parent>
 
+    <groupId>io.jenkins.plugins</groupId>
     <artifactId>osf-builder-suite-for-sfcc-run-job</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>hpi</packaging>

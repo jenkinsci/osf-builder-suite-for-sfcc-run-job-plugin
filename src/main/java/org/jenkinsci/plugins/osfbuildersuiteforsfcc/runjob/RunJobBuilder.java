@@ -406,7 +406,6 @@ public class RunJobBuilder extends Builder implements SimpleBuildStep {
             logger.println(" + Ok");
             /* Running job */
 
-            openCommerceAPI.close();
             return null;
         }
     }

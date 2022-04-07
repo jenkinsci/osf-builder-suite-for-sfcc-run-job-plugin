@@ -50,4 +50,12 @@
             </div>
         </f:repeatableProperty>
     </f:entry>
+
+    <f:entry
+        title="Wait For Job To Finish"
+        field="waitForJobToFinish"
+        help="/plugin/osf-builder-suite-for-sfcc-run-job/help/projectConfig-waitForJobToFinish.html">
+
+        <f:checkbox value="true" />
+    </f:entry>
 </j:jelly>

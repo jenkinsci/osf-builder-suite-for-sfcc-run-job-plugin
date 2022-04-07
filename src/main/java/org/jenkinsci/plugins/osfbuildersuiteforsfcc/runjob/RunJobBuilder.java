@@ -46,6 +46,7 @@ public class RunJobBuilder extends Builder implements SimpleBuildStep {
     private String ocVersion;
     private String jobName;
     private List<JobArgument> jobArguments;
+    private Boolean waitForJobToFinish;
 
     @DataBoundConstructor
     public RunJobBuilder(
@@ -53,13 +54,15 @@ public class RunJobBuilder extends Builder implements SimpleBuildStep {
             String ocCredentialsId,
             String ocVersion,
             String jobName,
-            List<JobArgument> jobArguments) {
+            List<JobArgument> jobArguments,
+            Boolean waitForJobToFinish) {
 
         this.hostname = hostname;
         this.ocCredentialsId = ocCredentialsId;
         this.ocVersion = ocVersion;
         this.jobName = jobName;
         this.jobArguments = jobArguments;
+        this.waitForJobToFinish = waitForJobToFinish;
     }
 
     @SuppressWarnings("unused")
@@ -117,6 +120,17 @@ public class RunJobBuilder extends Builder implements SimpleBuildStep {
         this.jobArguments = jobArguments;
     }
 
+    @SuppressWarnings("unused")
+    public Boolean getWaitForJobToFinish() {
+        return waitForJobToFinish;
+    }
+
+    @SuppressWarnings("unused")
+    @DataBoundSetter
+    public void setWaitForJobToFinish(Boolean waitForJobToFinish) {
+        this.waitForJobToFinish = waitForJobToFinish;
+    }
+
     @Override
     public void perform(
             @Nonnull Run<?, ?> build,
@@ -170,6 +184,7 @@ public class RunJobBuilder extends Builder implements SimpleBuildStep {
                 ocVersion,
                 jobName,
                 jobArguments,
+                waitForJobToFinish,
                 httpProxyCredentials,
                 getDescriptor().getDisableSSLValidation()
         ));
@@ -194,6 +209,8 @@ public class RunJobBuilder extends Builder implements SimpleBuildStep {
             load();
         }
 
+        @Override
+        @Nonnull
         public String getDisplayName() {
             return "OSF Builder Suite For Salesforce Commerce Cloud :: Run Job";
         }
@@ -308,6 +325,7 @@ public class RunJobBuilder extends Builder implements SimpleBuildStep {
         private final String ocVersion;
         private final String jobName;
         private final List<JobArgument> jobArguments;
+        private final Boolean waitForJobToFinish;
         private final HTTPProxyCredentials httpProxyCredentials;
         private final Boolean disableSSLValidation;
 
@@ -320,6 +338,7 @@ public class RunJobBuilder extends Builder implements SimpleBuildStep {
                 String ocVersion,
                 String jobName,
                 List<JobArgument> jobArguments,
+                Boolean waitForJobToFinish,
                 HTTPProxyCredentials httpProxyCredentials,
                 Boolean disableSSLValidation) {
 
@@ -330,6 +349,7 @@ public class RunJobBuilder extends Builder implements SimpleBuildStep {
             this.ocVersion = ocVersion;
             this.jobName = jobName;
             this.jobArguments = jobArguments;
+            this.waitForJobToFinish = waitForJobToFinish;
             this.httpProxyCredentials = httpProxyCredentials;
             this.disableSSLValidation = disableSSLValidation;
         }
@@ -395,15 +415,19 @@ public class RunJobBuilder extends Builder implements SimpleBuildStep {
             OpenCommerceAPI.JobExecutionResult runJobResult = openCommerceAPI.runJob();
             logger.println(String.format(" - %s", runJobResult.getStatus()));
 
-            String currentExecutionStatus = runJobResult.getStatus();
-            while (!StringUtils.equalsIgnoreCase(currentExecutionStatus, "finished")) {
-                TimeUnit.MINUTES.sleep(1);
-                OpenCommerceAPI.JobExecutionResult chkJobResult = openCommerceAPI.checkJob(runJobResult.getId());
-                currentExecutionStatus = chkJobResult.getStatus();
-                logger.println(String.format(" - %s", currentExecutionStatus));
-            }
+            if (waitForJobToFinish != null && waitForJobToFinish) {
+                String currentExecutionStatus = runJobResult.getStatus();
+                while (!StringUtils.equalsIgnoreCase(currentExecutionStatus, "finished")) {
+                    TimeUnit.MINUTES.sleep(1);
+                    OpenCommerceAPI.JobExecutionResult chkJobResult = openCommerceAPI.checkJob(runJobResult.getId());
+                    currentExecutionStatus = chkJobResult.getStatus();
+                    logger.println(String.format(" - %s", currentExecutionStatus));
+                }
 
-            logger.println(" + Ok");
+                logger.println(" + Ok");
+            } else {
+                logger.println(" + Ok (not waiting for the job to finish)");
+            }
             /* Running job */
 
             return null;
